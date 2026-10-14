@@ -1,0 +1,26 @@
+name: Update DevCleaner cask
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bump cask from Sparkle appcast
+        run: |
+          set -euo pipefail
+          XML="$(curl -fsSL https://devcleaner.app/appcast.xml)"
+          VER="$(printf '%s' "$XML" | grep -o '<sparkle:shortVersionString>[^<]*' | head -1 | sed 's/.*>//')"
+          CUR="$(grep -o 'version "[^"]*"' Casks/devcleaner-app.rb | cut -d'"' -f2)"
+          echo "appcast=$VER cask=$CUR"
+          [ -n "$VER" ] && [ "$VER" != "$CUR" ] || exit 0
+          SHA="$(curl -fsSL "https://devcleaner.app/downloads/DevCleaner-${VER}.dmg" | sha256sum | cut -d' ' -f1)"
+          sed -i -E "s/version \"[^\"]*\"/version \"${VER}\"/; s/sha256 \"[^\"]*\"/sha256 \"${SHA}\"/" Casks/devcleaner-app.rb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "devcleaner-app ${VER}"
+          git push
