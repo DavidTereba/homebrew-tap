@@ -1,6 +1,6 @@
 cask "devcleaner-app" do
-  version "1.17.1"
-  sha256 "dd9f2cc1c12f0c3cbf80d4102c6f8cd84b72e0196eaff691fa10d7e9c28cd2cf"
+  version "1.17.2"
+  sha256 "4365e70c07f7ac9ae4d042f789a50d37c6ca328a70ad01b307d4a8608aa12527"
 
   url "https://devcleaner.app/downloads/DevCleaner-#{version}.dmg"
   name "DevCleaner"
